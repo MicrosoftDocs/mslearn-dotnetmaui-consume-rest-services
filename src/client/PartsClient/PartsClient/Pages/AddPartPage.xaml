@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PartsClient.Pages.AddPartPage">
+
+    <Grid RowDefinitions="*,Auto" ColumnDefinitions="*,*" ColumnSpacing="5">
+        <TableView Intent="Data" Grid.Row="0" Grid.ColumnSpan="2">
+            <TableRoot>
+                <TableSection Title="Part Info">
+                    <EntryCell Label="Part ID" Text="{Binding PartID}" x:Name="PartIDField" />
+                    <EntryCell Label="Part Name" Text="{Binding PartName}" x:Name="PartNameField"/>
+                    <EntryCell Label="Part Type" Text="{Binding PartType}" x:Name="PartTypeField"/>
+                    <EntryCell Label="Supplier" Text="{Binding SupplierString}" x:Name="PartSupplierField"/>
+                </TableSection>
+            </TableRoot>
+        </TableView>
+
+        <Button Text="Add" Grid.Row="1" Grid.Column="0" Clicked="OnAddPart"/>
+        <Button Text="Clear" Grid.Row="1" Grid.Column="1" Clicked="OnClearPart"/>
+
+    </Grid>
+
+</ContentPage>
