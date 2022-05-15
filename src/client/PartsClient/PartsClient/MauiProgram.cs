@@ -1,4 +1,6 @@
-﻿namespace PartsClient;
+﻿using PartsClient.Data;
+
+namespace PartsClient;
 
 public static class MauiProgram
 {

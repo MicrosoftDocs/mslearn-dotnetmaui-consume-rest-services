@@ -1,56 +1,34 @@
 using PartsClient.Data;
+using PartsClient.ViewModels;
 
 namespace PartsClient.Pages;
 
+[QueryProperty("PartToDisplay", "part")]
 public partial class AddPartPage : ContentPage
 {
+	AddPartViewModel viewModel;
 	public AddPartPage()
 	{
 		InitializeComponent();
+
+		viewModel = new AddPartViewModel();
+		BindingContext = viewModel;
+    }
+
+	Part _partToDisplay;
+    public Part PartToDisplay {
+		get => _partToDisplay;
+		set
+        {
+			if (_partToDisplay == value)
+				return;
+
+			_partToDisplay = value;
+
+			viewModel.PartID = _partToDisplay.PartID;
+			viewModel.PartName = _partToDisplay.PartName;
+			viewModel.Suppliers = _partToDisplay.SupplierString;
+			viewModel.PartType = _partToDisplay.PartType;
+        }
 	}
-
-    private async void OnAddPart(object sender, EventArgs e)
-    {
-        if (IsBusy)
-            return;
-
-        IsBusy = true;
-
-        try
-        {
-            Part part = new Part
-            {
-                PartName = PartNameField.Text,
-                PartType = PartTypeField.Text,
-                Suppliers = new List<String> { PartSupplierField.Text }
-            };
-
-            var insertedPart = await PartsPage.partsViewModel.AddPart(part);
-
-            await DisplayAlert("Saved",
-                    "Changes saved",
-                    "OK");
-
-            BindingContext = insertedPart;
-        }
-        catch (Exception ex)
-        {
-            await this.DisplayAlert("Error",
-                    ex.Message,
-                    "OK");
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    private void OnClearPart(object sender, EventArgs e)
-    {
-        BindingContext = null;
-        PartIDField.Text = "";
-        PartNameField.Text = "";
-        PartTypeField.Text = "";
-        PartSupplierField.Text = "";
-    }
 }

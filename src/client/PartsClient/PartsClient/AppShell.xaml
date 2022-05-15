@@ -9,13 +9,9 @@
 
     <TabBar>
         <Tab>
-            <ShellContent Title="List Parts" 
+            <ShellContent Title="Part List" 
                           Route="listparts"
                           ContentTemplate="{DataTemplate partspages:PartsPage}"/>
-
-            <ShellContent Title="Add New Part"                           
-                          Route="addpart"
-                          ContentTemplate="{DataTemplate partspages:AddPartPage}"/>
         </Tab>
     </TabBar>
 

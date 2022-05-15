@@ -33,7 +33,7 @@ echo "Using Azure resource group $resourceGroupName."
 # Azure
 webappname=mslearnpartsserver$RANDOM$RANDOM
 
-cd src/webservice/PartsServer
+cd webservice/PartsServer
 az webapp up -n $webappname --resource-group $resourceGroupName --sku FREE --plan $webappname
 
 echo "Web app deployed! Here is the url to use in the app:"

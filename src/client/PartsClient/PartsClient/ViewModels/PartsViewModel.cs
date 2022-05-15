@@ -1,4 +1,6 @@
-﻿using PartsClient.Data;
+﻿using AndroidX.Interpolator.View.Animation;
+using Microsoft.Maui.Layouts;
+using PartsClient.Data;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -6,19 +8,85 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace PartsClient.ViewModels
 {
     public class PartsViewModel : INotifyPropertyChanged
     {
         private ObservableCollection<Part> _parts;
-        private PartsManager manager = new PartsManager();
+
+        private bool _isRefreshing = false;
+        public bool IsRefreshing
+        {
+            get => _isRefreshing;
+            set
+            {
+                if (_isRefreshing == value)
+                    return;
+
+                _isRefreshing = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsRefreshing)));
+            }
+        }
+
+        private bool _isBusy = false;
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                if (_isBusy == value)
+                    return;
+
+                _isBusy = value;
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsBusy)));
+            }
+        }
+
+        private Part _selectedPart;
+        public Part SelectedPart
+        {
+            get => _selectedPart;
+            set
+            {
+                if (_selectedPart == value)
+                    return;
+
+                _selectedPart = value;
+
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedPart)));
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public PartsViewModel()
-        {
+        {            
             _parts = new ObservableCollection<Part>();
+            LoadDataCommand = new Command(async () => await LoadData());
+            PartSelectedCommand = new Command(async () => await PartSelected());
+            AddNewPartCommand = new Command(async () => await Shell.Current.GoToAsync("addpart"));
+
+            MessagingCenter.Subscribe<AddPartViewModel>(this, "refresh", async (sender) => await LoadData());
+
+            Task.Run(LoadData);
+        }
+
+        private async Task PartSelected()
+        {
+            if (SelectedPart == null)
+                return;
+
+            var navigationParameter = new Dictionary<string, object>()
+            {
+                { "part", SelectedPart }
+            };
+
+            await Shell.Current.GoToAsync("addpart", navigationParameter);
+
+            MainThread.BeginInvokeOnMainThread(() => SelectedPart = null);            
         }
 
         public ObservableCollection<Part> Parts
@@ -27,79 +95,40 @@ namespace PartsClient.ViewModels
             set => _parts = value;
         }
 
-        public async Task<bool> UpdatePart(Part part)
+        public ICommand LoadDataCommand { get; private set; }
+
+        public ICommand PartSelectedCommand { get; private set; }
+
+        public ICommand AddNewPartCommand { get; private set; }
+
+        public async Task LoadData()
         {
+            if (IsBusy)
+                return;
+
             try
             {
-                var thePart = Parts.First(p => p.PartID == part.PartID);
-                if (thePart is null)
-                    return false;
+                IsRefreshing = true;
+                IsBusy = true;
 
-                await manager.Update(part);
-                thePart = part;
-                if (PropertyChanged != null)
+                var partsCollection = await PartsManager.GetAll();
+
+                MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    PropertyChanged(this, new PropertyChangedEventArgs("Parts"));
-                }
-                return true;
+                    Parts.Clear();
+                    
+                    foreach (Part part in partsCollection)
+                    {                        
+                        Parts.Add(part);                        
+                    }
+                });
             }
-            catch
-            {
-                return false;
+            finally
+            {    
+                IsRefreshing = false;
+                IsBusy = false;
             }
         }
 
-        public async Task<bool> DeletePart(Part part)
-        {
-            try
-            {
-                var thePart = Parts.First(p => p.PartID == part.PartID);
-                if (thePart is null)
-                    return false;
-
-                await manager.Delete(part.PartID);
-                Parts.Remove(thePart);
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs("Parts"));
-                }
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public async Task<Part> AddPart(Part part)
-        {
-            try
-            {
-                var insertedPart = await manager.Add(part.PartName, part.Suppliers[0], part.PartType);
-                Parts.Add(insertedPart);
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs("Parts"));
-                }
-                return insertedPart;
-            }
-            catch (Exception ex)
-            {
-                // Handle errors if possible - not implemented in this case
-                throw ex;
-            }
-        }
-
-        public async Task Populate()
-        {
-            var partsCollection = await manager.GetAll();
-            foreach (Part part in partsCollection)
-            {
-                if (Parts.All(p => p.PartID != part.PartID))
-                {
-                    Parts.Add(part);
-                }
-            }
-        }
     }
 }
