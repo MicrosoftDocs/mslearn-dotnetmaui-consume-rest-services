@@ -13,7 +13,7 @@ declare moduleName=consume-rest-services
 
 # Figure out the name of the resource group to use
 declare resourceGroupName=""
-declare existingResourceGroup=$(az group list | jq '.[] | select(.tags."x-created-by"=="freelearning").name' --raw-output)
+declare existingResourceGroup=$(az group list | jq '.[] | select(.tags."x-created-by"=="productsandboxes").name' --raw-output)
 
 # If there is more than one RG or there's only one but its name is not a GUID,
 # we're probably not in the Learn sandbox.
