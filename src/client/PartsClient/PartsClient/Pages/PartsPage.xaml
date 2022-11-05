@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PartsClient.Pages.PartsPage">
 
-    <VerticalStackLayout>
-        <Button Text="Add New Part" Margin="20, 10, 20, 10" Command="{Binding AddNewPartCommand}" />
-        <RefreshView IsRefreshing="{Binding IsRefreshing}" x:Name="refreshView" 
+    <Grid RowDefinitions="Auto,*" ColumnDefinitions="*">
+        <Button Grid.Row="0" Grid.Column="0" Text="Add New Part" Margin="20, 10, 20, 10" Command="{Binding AddNewPartCommand}" />
+        <RefreshView Grid.Row="1" Grid.Column="0" IsRefreshing="{Binding IsRefreshing}" x:Name="refreshView" 
                      Command="{Binding LoadDataCommand}">
             <CollectionView  Margin="30,20,30,30"
                              ItemsSource="{Binding Parts}"                             
@@ -26,6 +26,6 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
         </RefreshView>
-    </VerticalStackLayout>
+    </Grid>
 
 </ContentPage>
