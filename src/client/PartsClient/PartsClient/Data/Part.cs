@@ -18,7 +18,7 @@ namespace PartsClient.Data
 
         public string PartType { get; set; }
 
-        public List<string> Suppliers { get; set; }
+        public List<string> Suppliers { get; set; } = new List<string>();
         public DateTime PartAvailableDate { get; set; }
 
         public string SupplierString
