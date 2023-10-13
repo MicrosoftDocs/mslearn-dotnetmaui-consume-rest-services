@@ -2,27 +2,26 @@
 using Microsoft.AspNetCore.Mvc;
 using PartsService.Models;
 
-namespace PartsService.Controllers
+namespace PartsService.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class LoginController : BaseController
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class LoginController : BaseController
+    [HttpGet]
+    public ActionResult Get()
     {
-        [HttpGet]
-        public ActionResult Get()
+        try
         {
-            try
-            {
-                var authorizationToken = Guid.NewGuid().ToString();
+            var authorizationToken = Guid.NewGuid().ToString();
 
-                PartsFactory.Initialize(authorizationToken);
+            PartsFactory.Initialize(authorizationToken);
 
-                return new JsonResult(authorizationToken);
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(ex.Message);
-            }
+            return new JsonResult(authorizationToken);
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(ex.Message);
         }
     }
 }

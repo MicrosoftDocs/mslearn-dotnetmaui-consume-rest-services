@@ -3,80 +3,79 @@ using Microsoft.AspNetCore.Mvc;
 using PartsService.Models;
 using System.Net;
 
-namespace PartsService.Controllers
+namespace PartsService.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class BaseController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class BaseController : ControllerBase
+    protected List<Part> UserParts
     {
-        protected List<Part> UserParts
+        get
         {
-            get
+            if (string.IsNullOrWhiteSpace(this.AuthorizationToken))
+            {
+                return null;
+            }
+
+            if (!PartsFactory.Parts.ContainsKey(this.AuthorizationToken))
+            {
+                return null;
+            }
+
+            var result = PartsFactory.Parts[this.AuthorizationToken];
+
+            return result.Item2;
+        }
+    }
+
+    protected bool CheckAuthorization()
+    {
+        PartsFactory.ClearStaleData();
+
+        try
+        {
+            var ctx = HttpContext;
+            if (ctx != null)
             {
                 if (string.IsNullOrWhiteSpace(this.AuthorizationToken))
                 {
-                    return null;
-                }
-
-                if (!PartsFactory.Parts.ContainsKey(this.AuthorizationToken))
-                {
-                    return null;
-                }
-
-                var result = PartsFactory.Parts[this.AuthorizationToken];
-
-                return result.Item2;
-            }
-        }
-
-        protected bool CheckAuthorization()
-        {
-            PartsFactory.ClearStaleData();
-
-            try
-            {
-                var ctx = HttpContext;
-                if (ctx != null)
-                {
-                    if (string.IsNullOrWhiteSpace(this.AuthorizationToken))
-                    {
-                        ctx.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                        return false;
-                    }
-                }
-                else
-                {
+                    ctx.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                     return false;
                 }
-
-                if (!PartsFactory.Parts.ContainsKey(this.AuthorizationToken))
-                {
-                    return false;
-                }
-
-                return true;
             }
-            catch
+            else
             {
+                return false;
             }
 
-            return false;
+            if (!PartsFactory.Parts.ContainsKey(this.AuthorizationToken))
+            {
+                return false;
+            }
+
+            return true;
+        }
+        catch
+        {
         }
 
-        protected string AuthorizationToken
+        return false;
+    }
+
+    protected string AuthorizationToken
+    {
+        get
         {
-            get
+            string authorizationToken = string.Empty;
+
+            var ctx = HttpContext;
+            if (ctx != null)
             {
-                string authorizationToken = string.Empty;
-
-                var ctx = HttpContext;
-                if (ctx != null)
-                {
-                    authorizationToken = ctx.Request.Headers["Authorization"].ToString();
-                }
-
-                return authorizationToken;
+                authorizationToken = ctx.Request.Headers["Authorization"].ToString();
             }
+
+            return authorizationToken;
         }
     }
 }
