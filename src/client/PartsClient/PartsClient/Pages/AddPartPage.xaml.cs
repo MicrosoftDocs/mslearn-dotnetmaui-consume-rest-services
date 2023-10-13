@@ -16,7 +16,8 @@ public partial class AddPartPage : ContentPage
     }
 
 	Part _partToDisplay;
-    public Part PartToDisplay {
+    public Part PartToDisplay 
+	{
 		get => _partToDisplay;
 		set
         {

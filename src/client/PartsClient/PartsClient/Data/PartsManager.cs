@@ -6,8 +6,6 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-using Newtonsoft.Json;
-
 namespace PartsClient.Data
 {
     public static class PartsManager
