@@ -63,7 +63,7 @@ public partial class AddPartViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task DeletePart()
+    async Task DeletePart()
     {
         if (string.IsNullOrWhiteSpace(PartID))
             return;
@@ -75,7 +75,8 @@ public partial class AddPartViewModel : ObservableObject
         await Shell.Current.GoToAsync("..");
     }
 
-    private async Task DoneEditing()
+    [RelayCommand]
+    async Task DoneEditing()
     {
         await Shell.Current.GoToAsync("..");
     }
