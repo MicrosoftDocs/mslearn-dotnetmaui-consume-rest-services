@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="PartsClient.Pages.PartsPage">
+             x:Class="PartsClient.Pages.PartsPage"
+             xmlns:viewmodel="clr-namespace:PartsClient.ViewModels"
+             xmlns:data="clr-namespace:PartsClient.Data"
+             x:DataType="viewmodel:PartsViewModel">
 
     <Grid RowDefinitions="Auto,*" ColumnDefinitions="*">
         <Button Grid.Row="0" Grid.Column="0" Text="Add New Part" Margin="20, 10, 20, 10" Command="{Binding AddNewPartCommand}" />
@@ -16,7 +19,7 @@
                     <LinearItemsLayout Orientation="Vertical" ItemSpacing="20" />
                 </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="data:Part">
                         <VerticalStackLayout Padding="15,10" Margin="10,5,10,5">
                             <Label Text="{Binding PartID, StringFormat='ID: {0}'}" FontSize="Title" Margin="0,0,0,20"/>
                             <Label Text="{Binding PartName, StringFormat='Part Name: {0}'}"/>

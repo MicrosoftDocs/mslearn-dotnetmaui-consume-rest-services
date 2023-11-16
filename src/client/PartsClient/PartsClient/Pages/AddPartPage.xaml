@@ -2,9 +2,12 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PartsClient.Pages.AddPartPage"
+             xmlns:viewmodel="clr-namespace:PartsClient.ViewModels"
+             x:DataType="viewmodel:AddPartViewModel"
              Title="Edit Part">
 
-    <Grid RowDefinitions="*,Auto" ColumnDefinitions="*,*,*" ColumnSpacing="5">
+    <Grid RowDefinitions="*,Auto" ColumnDefinitions="*,*,*" ColumnSpacing="5"
+          Padding="10">
         <TableView Intent="Data" Grid.Row="0" Grid.ColumnSpan="3">
             <TableRoot>
                 <TableSection Title="Part Info">
@@ -16,8 +19,8 @@
             </TableRoot>
         </TableView>
 
-        <Button Text="Save" Grid.Row="1" Grid.Column="0" Command="{Binding SaveCommand}" Margin="20,0"/>
-        <Button Text="Delete" Grid.Row="1" Grid.Column="1" Command="{Binding DeleteCommand}"/>
+        <Button Text="Save" Grid.Row="1" Grid.Column="0" Command="{Binding SaveDataCommand}" Margin="20,0"/>
+        <Button Text="Delete" Grid.Row="1" Grid.Column="1" Command="{Binding DeletePartCommand}"/>
         <Button Text="Cancel" Grid.Row="1" Grid.Column="2" Command="{Binding DoneEditingCommand}" Margin="20,0"/>
 
     </Grid>

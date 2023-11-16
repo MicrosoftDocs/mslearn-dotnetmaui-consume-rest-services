@@ -1,139 +1,81 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using PartsClient.Data;
-using PartsClient.Pages;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
-namespace PartsClient.ViewModels
-{
-    public class AddPartViewModel : INotifyPropertyChanged
+namespace PartsClient.ViewModels;
+
+public partial class AddPartViewModel : ObservableObject
+{ 
+    [ObservableProperty]
+    string _partID;
+
+    [ObservableProperty]
+    string _partName;
+
+    [ObservableProperty]
+    string _suppliers;
+
+    [ObservableProperty]
+    string _partType;
+    
+    public AddPartViewModel()
+    {            
+    }
+
+    [RelayCommand]
+    async Task SaveData()
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        if (string.IsNullOrWhiteSpace(PartID))
+            await InsertPart();
+        else
+            await UpdatePart();
+    }
 
-        public ICommand DoneEditingCommand { get; private set; }
 
-        public ICommand SaveCommand { get; private set; }
+    [RelayCommand]
+    async Task InsertPart()
+    {
+        await PartsManager.Add(PartName, Suppliers, PartType);
 
-        public ICommand DeleteCommand { get; private set; }
+        WeakReferenceMessenger.Default.Send(new RefreshMessage(true));
 
-        string _partId;
-        public string PartID
+        await Shell.Current.GoToAsync("..");
+    }
+
+
+    [RelayCommand]
+    async Task UpdatePart()
+    {
+        Part partToSave = new()
         {
-            get => _partId;
-            set
-            {
-                if (_partId == value)
-                    return;
+            PartID = PartID,
+            PartName = PartName,
+            PartType = PartType,
+            Suppliers = Suppliers.Split(",").ToList()
+        };
 
-                _partId = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PartID)));
-            }
-        }
+        await PartsManager.Update(partToSave);
 
-        string _partName;
-        public string PartName
-        {
-            get => _partName;
-            set
-            {
-                if (_partName == value)
-                    return;
+        WeakReferenceMessenger.Default.Send(new RefreshMessage(true));
 
-                _partName = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PartName)));
-            }
-        }
+        await Shell.Current.GoToAsync("..");
+    }
 
-        string _suppliers;
-        public string Suppliers
-        {
-            get => _suppliers;
-            set
-            {
-                if (_suppliers == value)
-                    return;
+    private async Task DeletePart()
+    {
+        if (string.IsNullOrWhiteSpace(PartID))
+            return;
 
-                _suppliers = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Suppliers)));
-            }
-        }
+        await PartsManager.Delete(PartID);
 
-        string _partType;
-        public string PartType
-        {
-            get => _partType;
-            set
-            {
-                if (_partType == value)
-                    return;
+        WeakReferenceMessenger.Default.Send(new RefreshMessage(true));
 
-                _partType = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PartType)));
-            }
-        }
+        await Shell.Current.GoToAsync("..");
+    }
 
-        //private PartsManager partsManager = new PartsManager();
-        
-        public AddPartViewModel()
-        {            
-            DoneEditingCommand = new Command(async () => await DoneEditing());
-            SaveCommand = new Command(async () => await SaveData());
-            DeleteCommand = new Command(async () => await DeletePart());
-        }        
-
-        private async Task SaveData()
-        {
-            if (string.IsNullOrWhiteSpace(PartID))
-                await InsertPart();
-            else
-                await UpdatePart();
-        }
-
-        private async Task InsertPart()
-        {
-            await PartsManager.Add(PartName, Suppliers, PartType);
-
-            MessagingCenter.Send(this, "refresh");
-
-            await Shell.Current.GoToAsync("..");
-        }
-
-        private async Task UpdatePart()
-        {
-            Part partToSave = new()
-            {
-                PartID = PartID,
-                PartName = PartName,
-                PartType = PartType,
-                Suppliers = Suppliers.Split(",").ToList()
-            };
-
-            await PartsManager.Update(partToSave);
-
-            MessagingCenter.Send(this, "refresh");
-
-            await Shell.Current.GoToAsync("..");
-        }
-
-        private async Task DeletePart()
-        {
-            if (string.IsNullOrWhiteSpace(PartID))
-                return;
-
-            await PartsManager.Delete(PartID);
-
-            MessagingCenter.Send(this, "refresh");
-
-            await Shell.Current.GoToAsync("..");
-        }
-
-        private async Task DoneEditing()
-        {
-            await Shell.Current.GoToAsync("..");
-        }
+    private async Task DoneEditing()
+    {
+        await Shell.Current.GoToAsync("..");
     }
 }
