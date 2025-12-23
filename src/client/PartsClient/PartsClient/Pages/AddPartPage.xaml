@@ -8,16 +8,53 @@
 
     <Grid RowDefinitions="*,Auto" ColumnDefinitions="*,*,*" ColumnSpacing="5"
           Padding="10">
-        <TableView Intent="Data" Grid.Row="0" Grid.ColumnSpan="3">
-            <TableRoot>
-                <TableSection Title="Part Info">
-                    <EntryCell Label="Part ID" Text="{Binding PartID}" IsEnabled="False" />
-                    <EntryCell Label="Part Name" Text="{Binding PartName}" />
-                    <EntryCell Label="Part Type" Text="{Binding PartType}" />
-                    <EntryCell Label="Supplier" Text="{Binding Suppliers}" />
-                </TableSection>
-            </TableRoot>
-        </TableView>
+        <ScrollView Grid.Row="0" Grid.ColumnSpan="3">
+            <VerticalStackLayout Spacing="15" Padding="15">
+                <Border StrokeThickness="0"
+                       BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                       Padding="15">
+                    <VerticalStackLayout Spacing="15">
+                        <!-- Part ID Field (Disabled) -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Part ID" 
+                                   FontAttributes="Bold"
+                                   FontSize="12"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                            <Entry Text="{Binding PartID}" 
+                                   IsEnabled="False"
+                                   BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}" />
+                        </VerticalStackLayout>
+
+                        <!-- Part Name Field -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Part Name" 
+                                   FontAttributes="Bold"
+                                   FontSize="12"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                            <Entry Text="{Binding PartName}" />
+                        </VerticalStackLayout>
+
+                        <!-- Part Type Field -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Part Type" 
+                                   FontAttributes="Bold"
+                                   FontSize="12"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                            <Entry Text="{Binding PartType}" />
+                        </VerticalStackLayout>
+
+                        <!-- Supplier Field -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Supplier" 
+                                   FontAttributes="Bold"
+                                   FontSize="12"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                            <Entry Text="{Binding Suppliers}" />
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
 
         <Button Text="Save" Grid.Row="1" Grid.Column="0" Command="{Binding SaveDataCommand}" Margin="20,0"/>
         <Button Text="Delete" Grid.Row="1" Grid.Column="1" Command="{Binding DeletePartCommand}"/>
